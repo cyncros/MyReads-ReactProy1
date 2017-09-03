@@ -1,35 +1,48 @@
 import React, { Component } from "react";
 import {Link} from 'react-router-dom'
-import escapeRegExp from 'escape-string-regexp'
-import PropTypes from 'prop-types'
 import sortBy from 'sort-by'
 import Shelf from './Shelf'
+import * as BooksAPI from "./BooksAPI";
+import {debounce} from 'throttle-debounce';
 
 class SearchBook extends Component {
-  static PropTypes={
 
-  }
+
   state = {
-    query: ''
+    query: '', datos:[]
   }
 
-  updateQuery=(query)=>{
-    this.setState({ query: query.trim() })
-  }
+updateQuery = debounce (125,query => {
+  this.setState({ query: query.trim() });
+  (query==='')?(this.setState({datos:[]})) :(
+  BooksAPI.search(query, 20).then(datos => {
+    this.setState({ datos });
+    })
+  );
+});
 
+joinBooks = (searchBooks, listBooks) => {
+  for (let searchBook of searchBooks) {
+    for (let listBook of listBooks) {
+      (searchBook.id === listBook.id) && (searchBook.shelf = listBook.shelf);
+    }
+  }
+  return searchBooks
+};
 
   render() {
-let showBooks
+let showBooks=[]
 const {listBooks}=this.props
-const {query} = this.state
+const {query, datos} = this.state
 
-if(query){
-  const match =new RegExp(escapeRegExp(query),'i')
-  showBooks=listBooks.filter((book)=>match.test(book.authors)||match.test(book.title))
-} else{
-  showBooks=listBooks
-}
+showBooks=(datos.length>0)
+?(this.joinBooks(datos,listBooks)
+
+)
+:([]);
+
 showBooks.sort(sortBy('authors'))
+
 
     return (
       <div className="search-books">
@@ -47,11 +60,11 @@ showBooks.sort(sortBy('authors'))
           </div>
         </div>
         <div className="search-books-results">
-        <ol className="books-grid" />
 
           <Shelf
             Books={showBooks}
-            ShelfName={`Searching of ... ${query}`}
+            ShelfName={` ${query}`}
+            getAllData={this.props.getAllData}
           />
         </div>
       </div>

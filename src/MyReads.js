@@ -1,69 +1,59 @@
 import React, { Component } from "react";
 import {Link} from 'react-router-dom'
-import PropTypes from 'prop-types'
 import Shelf from "./Shelf";
-import Book from "./Book";
-
 
 class MyReads extends Component {
-state={
-currentR:[], wantR:[], alreadyR:[],listBooks:[]
-}
+cambios=(listBooks=[])=> {
 
+  let currentR = [],
+    wantR = [],
+    alreadyR = [];
 
-cambios(){
-
-let{currentR, wantR, alreadyR}=this.state
-let {listBooks}=this.props;
-listBooks.map((libro)=>{
-  if(libro.shelf==="currentlyReading"){
-currentR.push(libro)
-  }
-  else if (libro.shelf==="wantToRead") {
-    wantR.push(libro)
-  }
-  else if(libro.shelf==="read"){
-    alreadyR.push(libro)
-  }
-})
-
+  listBooks.map(libro => {
+    if (libro.shelf === "currentlyReading") {
+      currentR.push(libro);
+    } else if (libro.shelf === "wantToRead") {
+      wantR.push(libro);
+    } else if (libro.shelf === "read") {
+      alreadyR.push(libro);
+    }
+  })
+  return [currentR, wantR, alreadyR];
 
 }
 
   render() {
-let {currentR, wantR, alreadyR}=this.state
-    let {listBooks}=this.props
-
-
-
-    return (
-      <div className="list-books">
-        <cambios/>
-        <div className="list-books-title">
-          <h1>MyReads</h1>
-        </div>
-        <div className="list-books-content">
-          <div>
-
-            {this.cambios(listBooks={listBooks})}
-            <Shelf Books={currentR}
-              ShelfName={'Currently Reading'}
+let [currentR=[], wantR=[], alreadyR=[]]=this.cambios(this.props.listBooks)
+    // let {listBooks}=this.props
+        return (
+        <div className="list-books">
+          <div className="list-books-title">
+            <h1>MyReads</h1>
+          </div>
+          <div className="list-books-content">
+            <Shelf
+              Books={currentR}
+              ShelfName={"Currently Reading"}
+              getAllData={this.props.getAllData}
             />
-            <Shelf Books={wantR}
-              ShelfName={'Want To Read'}
+            <Shelf
+              Books={wantR}
+              ShelfName={"Want To Read"}
+              getAllData={this.props.getAllData}
             />
-            <Shelf Books={alreadyR}
-              ShelfName={'Read'}
+            <Shelf
+              Books={alreadyR}
+              ShelfName={"Read"}
+              getAllData={this.props.getAllData}
             />
           </div>
+
+          <div className="open-search">
+            <Link to="/search">Add a book</Link>
+          </div>
         </div>
-        <div className="open-search">
-          <Link to="/search" >
-          Add a book
-          </Link>
-        </div>
-      </div>
-    );
+      );
+
   }
 }
 

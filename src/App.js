@@ -1,36 +1,27 @@
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
-import {Link} from 'react-router-dom'
-import escapeRegExp from 'escape-string-regexp'
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
 import SearchBook from "./SearchBook";
 import MyReads from "./MyReads";
-import Book from "./Book"
-import Shelf from "./Shelf"
-const libros=[
-  {
-    "title":"The Linux Command Line",
-    "authors":"William E. Shotts, Jr.",
-    "shelf":"currentlyReading",
-    "thumbnail": "http://books.google.com/books/content?id=nggnmAEAC…J&printsec=frontcover&img=1&zoom=5&source=gbs_api",
-    "averageRating":"4"
-
-  }
-]
 
 class BooksApp extends Component {
   state = {
     querry:'', books:[]
   };
 
-
 componentDidMount() {
+this.getAllData()
+
+}
+
+getAllData=()=>{
   BooksAPI.getAll().then((books)=>{
     this.setState({books})
 
   })
 }
+
 
   render() {
 
@@ -39,20 +30,17 @@ componentDidMount() {
 
         <Route exact path="/" render={()=>(
 
-          <div>
-          <MyReads listBooks={this.state.books}/>
-          </div>
+          <MyReads listBooks={this.state.books}
+          getAllData={this.getAllData}/>
+
         )}/>
           <Route path="/search" render={()=>(
-            <div>
+
             <SearchBook
               listBooks={this.state.books}
-        /></div>
+              getAllData={this.getAllData}
+        />
       )}/>
-
-
-
-
     </div>
     )
   }

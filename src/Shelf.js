@@ -1,8 +1,30 @@
 import React, { Component } from "react";
 import Book from "./Book";
+import * as BooksAPI from "./BooksAPI";
+
+import Rater from 'react-rater'
+import 'react-rater/lib/react-rater.css'
+
+
+
 
 class Shelf extends Component {
-  
+
+
+  changeShelf= (book,shelf)=>{
+    BooksAPI.update(book,shelf)
+    this.props.getAllData()
+
+  }
+
+  changeAvrg=(book,tAvrg)=>{
+    console.log('tAvrg',tAvrg)
+    console.log('book',book)
+    book.averageRating=tAvrg;
+  BooksAPI.update(book,book.shelf)
+
+
+  }
   render() {
 
     const {Books}=this.props
@@ -16,8 +38,16 @@ class Shelf extends Component {
             {Books.map((book,i) =>
               <li key={i}>
 
-                <Book book={book}/>
-                <p>{book.shelf}</p>
+                <Book book={book}
+                  changeShelf={this.changeShelf}
+                />
+                <div><Rater interactive={false} rating={book.averageRating}/></div>
+                {/* <Rating
+                  onClick={rate=>this.changeAvrg(book,rate)}
+                  initialRate={book.averageRating}
+
+                /> */}
+
               </li>
             )}
 
